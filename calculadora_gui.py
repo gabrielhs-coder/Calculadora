@@ -17,6 +17,8 @@ def criar_layout():
     ]
     hist = [[sg.Text("Histórico")], [sg.Listbox([], size=(22, 13), key="-HIST-")]]
     return [[sg.Column(calc), sg.VerticalSeparator(), sg.Column(hist)]]
+
+
 def atualizar_display(win, val):
     win["-DISP-"].update(val)
 
@@ -28,6 +30,8 @@ def tratar_erro(win, msg):
 def adicionar_ao_historico(win, hist, expr, res):
     hist.insert(0, f"{expr} = {res}")
     win["-HIST-"].update(hist[:10])
+
+
 def calcular(expr):
     if not expr or expr[-1] in OPS or expr[-1] == ".":
         raise ValueError("Expressão inválida")
@@ -42,6 +46,8 @@ def calcular(expr):
         if res.is_integer():
             res = int(res)
     return str(res)
+
+
 def main():
     win = sg.Window("Calculadora - INE5201", criar_layout())
     expr, hist, erro = "", [], False
@@ -70,3 +76,26 @@ def main():
             elif "." not in expr.split("+")[-1].split("-")[-1].split("*")[-1].split("/")[-1]:
                 expr += "."
             atualizar_display(win, expr)
+        elif ev in OPS and not erro:
+            if not expr and ev == "-":
+                expr = "-"
+            elif expr and expr[-1] in OPS and expr != "-":
+                expr = expr[:-1] + ev
+            elif expr and expr[-1] != "." and len(expr) < MAX_CHARS:
+                expr += ev
+            atualizar_display(win, expr or "0")
+        elif ev == "=" and expr and not erro:
+            try:
+                res = calcular(expr)
+                adicionar_ao_historico(win, hist, expr, res)
+                atualizar_display(win, res)
+                expr = res
+            except (ZeroDivisionError, ValueError) as e:
+                tratar_erro(win, str(e))
+                expr, erro = "", True
+
+    win.close()
+
+
+if __name__ == "__main__":
+    main()
