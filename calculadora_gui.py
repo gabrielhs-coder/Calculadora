@@ -42,3 +42,31 @@ def calcular(expr):
         if res.is_integer():
             res = int(res)
     return str(res)
+def main():
+    win = sg.Window("Calculadora - INE5201", criar_layout())
+    expr, hist, erro = "", [], False
+
+    while True:
+        ev, _ = win.read()
+        if ev == sg.WIN_CLOSED:
+            break
+        if ev == "C":
+            expr, erro = "", False
+            atualizar_display(win, "0")
+        elif ev == "-CHIST-":
+            hist.clear()
+            win["-HIST-"].update(hist)
+        elif ev == "←":
+            expr = "" if erro else expr[:-1]
+            erro = False
+            atualizar_display(win, expr or "0")
+        elif ev in "0123456789" and (erro or len(expr) < MAX_CHARS):
+            expr = ev if (erro or expr == "0") else expr + ev
+            erro = False
+            atualizar_display(win, expr)
+        elif ev == "." and (erro or len(expr) < MAX_CHARS):
+            if erro or not expr or expr[-1] in OPS:
+                expr, erro = ("0." if erro else expr + "0."), False
+            elif "." not in expr.split("+")[-1].split("-")[-1].split("*")[-1].split("/")[-1]:
+                expr += "."
+            atualizar_display(win, expr)
