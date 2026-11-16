@@ -17,3 +17,14 @@ def criar_layout():
     ]
     hist = [[sg.Text("Histórico")], [sg.Listbox([], size=(22, 13), key="-HIST-")]]
     return [[sg.Column(calc), sg.VerticalSeparator(), sg.Column(hist)]]
+def atualizar_display(win, val):
+    win["-DISP-"].update(val)
+
+
+def tratar_erro(win, msg):
+    atualizar_display(win, f"Erro: {msg}")
+
+
+def adicionar_ao_historico(win, hist, expr, res):
+    hist.insert(0, f"{expr} = {res}")
+    win["-HIST-"].update(hist[:10])
