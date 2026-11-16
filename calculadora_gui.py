@@ -28,3 +28,17 @@ def tratar_erro(win, msg):
 def adicionar_ao_historico(win, hist, expr, res):
     hist.insert(0, f"{expr} = {res}")
     win["-HIST-"].update(hist[:10])
+def calcular(expr):
+    if not expr or expr[-1] in OPS or expr[-1] == ".":
+        raise ValueError("Expressão inválida")
+    try:
+        res = eval(expr)
+    except ZeroDivisionError:
+        raise ZeroDivisionError("Divisão por zero")
+    except Exception:
+        raise ValueError("Expressão inválida")
+    if isinstance(res, float):
+        res = round(res, 8)
+        if res.is_integer():
+            res = int(res)
+    return str(res)
